@@ -1,0 +1,25 @@
+name: "Build Status Notifier"
+description: "Notify slack about complex builds"
+inputs:
+  type:
+    description: "If type is set to 'trigger' then a new slack message will be started"
+    default: "update"
+  messageTs:
+    description: "Timestamp of a previous message. Required for fail and success notifications"
+  token:
+    description: "Slack bot token"
+    required: true
+  channel:
+    description: "The channel to post to!"
+    required: true
+  githubToken:
+    description: "Github token with actions:read permission"
+  jobStatus:
+    description: "Give me job.status please!"
+outputs:
+  messageTs:
+    description: "The timestamp of the message. Used to identify the message in future steps"
+runs:
+  using: "node14"
+  main: "index.js"
+  post: "cleanup.js"

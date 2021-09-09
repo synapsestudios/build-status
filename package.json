@@ -1,0 +1,24 @@
+{
+  "name": "build-status",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test",
+    "test:watch": "mocha test -w recursive"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.5.0",
+    "@actions/github": "^5.0.0",
+    "got": "^11.8.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^8.3.2",
+    "msw": "^0.28.2",
+    "sinon": "^10.0.0"
+  }
+}
