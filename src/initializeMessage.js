@@ -2,25 +2,26 @@ const { SlackMessageRoot } = require("./SlackMessage");
 
 module.exports = (slackMessage) => async (
   sender = { name: "string", avatar: "" },
-  workflowLink = ""
+  workflowLink = "",
+  header = "Build Triggered"
 ) => {
   if (!slackMessage) throw new Error("Slack Message object must be provided");
   if (!(slackMessage instanceof SlackMessageRoot))
     throw new Error("slackMessage must be SlackMessage object");
 
-  await slackMessage.initialize(constructMessage(sender, workflowLink));
+  await slackMessage.initialize(constructMessage(sender, workflowLink, header));
   return slackMessage.ts;
 };
 
-function constructMessage(sender, workflowLink) {
+function constructMessage(sender, workflowLink, header) {
   return {
-    text: ":construction: Build Triggered :construction: ",
+    text: `:construction: ${header} :construction: `,
     blocks: [
       {
         type: "header",
         text: {
           type: "plain_text",
-          text: ":construction: Build Triggered :construction: ",
+          text: `:construction: ${header} :construction: `,
           emoji: true,
         },
       },
@@ -34,7 +35,7 @@ function constructMessage(sender, workflowLink) {
           },
           {
             type: "mrkdwn",
-            text: `*${sender.name}* has triggered a build.\n<${workflowLink}|Watch Progress>`,
+            text: `*${sender.name}* has triggered an action.\n<${workflowLink}|Watch Progress>`,
           },
         ],
       },

@@ -21,13 +21,14 @@ const execute = async function () {
     const sender = github.context.payload.sender;
     const messageTs = await initializeMessage(slackMessage)(
       { name: sender.login, avatar: sender.avatar_url },
-      run.data.html_url
+      run.data.html_url,
+      core.getInput('header'),
     );
     core.setOutput('messageTs', messageTs);
   } else {
     await reportJobStatus(slackMessage)({
       runId: github.context.runId,
-      job: github.context.job,
+      job: core.getInput('name') ?? github.context.job,
       status: 'in_progress',
     });
   }
