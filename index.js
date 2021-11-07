@@ -28,7 +28,7 @@ const execute = async function () {
   } else {
     await reportJobStatus(slackMessage)({
       runId: github.context.runId,
-      job: core.getInput('name') ?? github.context.job,
+      job: core.getInput('name') || github.context.job,
       status: 'in_progress',
     });
   }
