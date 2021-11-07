@@ -13,7 +13,7 @@ const execute = async function () {
   if (core.getInput('type') !== 'trigger') {
     await reportJobStatus(slackMessage)({
       runId: github.context.runId,
-      job: github.context.job,
+      job: core.getInput("name") || github.context.job,
       status: core.getInput('jobStatus'),
     });
 
