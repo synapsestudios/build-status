@@ -18,6 +18,8 @@ inputs:
     description: "Give me job.status please!"
   name:
     description: "Give me job name please!"
+  header:
+    description: "Give me notification header please!"
 outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"
