@@ -16,6 +16,8 @@ inputs:
     description: "Github token with actions:read permission"
   jobStatus:
     description: "Give me job.status please!"
+  name:
+    description: "Give me job name please!"
 outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"
