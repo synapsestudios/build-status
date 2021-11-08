@@ -3,7 +3,7 @@ const { SlackMessageRoot } = require("./SlackMessage");
 module.exports = (slackMessage) => async (
   sender = { name: "string", avatar: "" },
   workflowLink = "",
-  header = "Build Triggered"
+  header = "Build"
 ) => {
   if (!slackMessage) throw new Error("Slack Message object must be provided");
   if (!(slackMessage instanceof SlackMessageRoot))
