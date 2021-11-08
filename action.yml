@@ -17,9 +17,10 @@ inputs:
   jobStatus:
     description: "Give me job.status please!"
   name:
-    description: "Give me job name please!"
+    description: "Defaults to job name"
   header:
     description: "Give me notification header please!"
+    default: "Build"
 outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"
