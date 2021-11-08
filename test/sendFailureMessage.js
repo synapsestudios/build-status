@@ -28,7 +28,7 @@ describe("sendFailureMessage", () => {
     //   )
     // );
 
-    const messageTs = await sendFailureMessage("TOKEN")("C020D9LJZHT");
+    const messageTs = await sendFailureMessage("TOKEN", "Build")("C020D9LJZHT");
     expect(messageTs).to.eq(mockedResponse.message.ts);
   });
 });

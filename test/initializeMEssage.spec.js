@@ -12,7 +12,8 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
     );
 
     return expect(result).to.be.rejected;
@@ -24,7 +25,8 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
     );
 
     return expect(result).to.be.rejected;
@@ -37,7 +39,8 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
     );
 
     expect(result).to.eq("1234.1234");
@@ -51,7 +54,7 @@ describe("initializeMessage", () => {
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
       "http://example.com",
-      "Pizza Ordered"
+      "Build"
     );
 
     expect(result).to.eq("1234.1234");
