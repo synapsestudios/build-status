@@ -16,6 +16,11 @@ inputs:
     description: "Github token with actions:read permission"
   jobStatus:
     description: "Give me job.status please!"
+  name:
+    description: "Defaults to job name"
+  header:
+    description: "Give me notification header please!"
+    default: "Build"
 outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"

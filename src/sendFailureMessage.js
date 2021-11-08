@@ -1,14 +1,13 @@
 const got = require("got");
 
-module.exports = (token) => async (channel) => {
+module.exports = (token, header) => async (channel) => {
   const response = await got.post("https://slack.com/api/chat.postMessage", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
     json: {
       ...getMessageObject({
-        text:
-          "THE BUILD IS FAILING\n:policesiren::policesiren::policesiren::policesiren:",
+        text: `${header} IS FAILING\n:policesiren::policesiren::policesiren::policesiren:`,
         emoji: ":policesiren::policesiren::policesiren::policesiren:\n",
       }),
       channel: channel,

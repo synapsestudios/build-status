@@ -8,30 +8,30 @@ class SlackMessage extends SlackMessageRoot {
 
   constructor(ts) {
     super();
-    this._mockTs = ts;
-    this._spies = {
+    this.#_mockTs = ts;
+    this.#_spies = {
       initialize: sinon.spy(),
       appendBlock: sinon.spy(),
     };
   }
 
   async initialize(message) {
-    this._ts = this._mockTs;
-    this._spies.initialize(message);
+    this.#_ts = this.#_mockTs;
+    this.#_spies.initialize(message);
     return;
   }
 
   get ts() {
-    return this._ts;
+    return this.#_ts;
   }
 
   async sendBlock(block) {
-    this._spies.appendBlock(block);
+    this.#_spies.appendBlock(block);
     return;
   }
 
   getSpy(method) {
-    return this._spies[method];
+    return this.#_spies[method];
   }
 }
 

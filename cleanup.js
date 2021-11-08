@@ -1,26 +1,28 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const { SlackMessage } = require('./src/SlackMessage');
-const reportJobStatus = require('./src/reportJobStatus');
-const sendFailureMessage = require('./src/sendFailureMessage');
+const core = require("@actions/core");
+const { SlackMessage } = require("./src/SlackMessage");
+const reportJobStatus = require("./src/reportJobStatus");
+const sendFailureMessage = require("./src/sendFailureMessage");
+const getActionParams = require("./src/getActionParams");
 
 const execute = async function () {
-  const slackMessage = new SlackMessage(core.getInput('token'), {
-    channel: core.getInput('channel'),
-    ts: core.getInput('messageTs'),
-  });
+  const params = await getActionParams();
 
-  if (core.getInput('type') !== 'trigger') {
-    await reportJobStatus(slackMessage)({
-      runId: github.context.runId,
-      job: github.context.job,
-      status: core.getInput('jobStatus'),
+  if (params.type === "update") {
+    const slackMessage = new SlackMessage(params.token, {
+      channel: params.channel,
+      ts: params.messageTs,
     });
 
-    if (core.getInput('jobStatus') === 'failure') {
-      await sendFailureMessage(core.getInput('token'))(core.getInput('channel'));
+    await reportJobStatus(slackMessage)({
+      runId: params.runId,
+      job: params.job,
+      status: params.jobStatus,
+    });
+
+    if (params.jobStatus === "failure") {
+      await sendFailureMessage(params.token, params.header)(params.channel);
     }
   }
-}
+};
 
 execute().catch((e) => core.setFailed(e.message));

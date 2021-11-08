@@ -12,7 +12,8 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
     );
 
     return expect(result).to.be.rejected;
@@ -24,7 +25,8 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
     );
 
     return expect(result).to.be.rejected;
@@ -37,7 +39,22 @@ describe("initializeMessage", () => {
         name: "spruce-bruce",
         avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
       },
-      "http://example.com"
+      "http://example.com",
+      "Build"
+    );
+
+    expect(result).to.eq("1234.1234");
+  });
+
+  it("Optionally takes a header for the message", async () => {
+    const slackMessage = new SlackMessage("1234.1234");
+    const result = await initializeMessage(slackMessage)(
+      {
+        name: "spruce-bruce",
+        avatar: "https://avatars.githubusercontent.com/u/59978?v=4",
+      },
+      "http://example.com",
+      "Build"
     );
 
     expect(result).to.eq("1234.1234");
