@@ -1,4 +1,4 @@
-name: Api PR
+name: Test
 on: [pull_request]
 jobs:
   test:
