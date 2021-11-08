@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 
-module.exports = async function getContext() {
+module.exports = async function getActionParams() {
   const githubToken = core.getInput("githubToken");
   const octokit = github.getOctokit(githubToken);
   const sender = github.context.payload.sender;
