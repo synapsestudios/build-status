@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test",
-    "test:watch": "mocha test -w recursive"
+    "test:watch": "mocha test -w recursive",
+    "prettier:ci": "prettier --check ."
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "chai-as-promised": "^7.1.1",
     "mocha": "^8.3.2",
     "msw": "^0.28.2",
+    "prettier": "^2.6.1",
     "sinon": "^10.0.0"
   }
 }

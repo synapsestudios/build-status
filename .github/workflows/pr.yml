@@ -18,5 +18,8 @@ jobs:
       - name: Install dependencies
         run: npm i
 
+      - name: Check Formatting
+        run: npm run prettier:ci
+
       - name: Test
         run: npm run test
