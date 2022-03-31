@@ -1,17 +1,21 @@
 const { SlackMessageRoot } = require("./SlackMessage");
 
-module.exports = (slackMessage) => async (
-  sender = { name: "string", avatar: "" },
-  workflowLink = "",
-  header = "Build"
-) => {
-  if (!slackMessage) throw new Error("Slack Message object must be provided");
-  if (!(slackMessage instanceof SlackMessageRoot))
-    throw new Error("slackMessage must be SlackMessage object");
+module.exports =
+  (slackMessage) =>
+  async (
+    sender = { name: "string", avatar: "" },
+    workflowLink = "",
+    header = "Build"
+  ) => {
+    if (!slackMessage) throw new Error("Slack Message object must be provided");
+    if (!(slackMessage instanceof SlackMessageRoot))
+      throw new Error("slackMessage must be SlackMessage object");
 
-  await slackMessage.initialize(constructMessage(sender, workflowLink, header));
-  return slackMessage.ts;
-};
+    await slackMessage.initialize(
+      constructMessage(sender, workflowLink, header)
+    );
+    return slackMessage.ts;
+  };
 
 function constructMessage(sender, workflowLink, header) {
   return {

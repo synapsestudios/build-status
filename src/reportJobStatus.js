@@ -1,15 +1,15 @@
 const { SlackMessageRoot } = require("./SlackMessage");
 
-module.exports = (slackMessage) => async (
-  ctx = { runId: "", job: "", status: "in_progress" }
-) => {
-  if (!slackMessage) throw new Error("Slack Message object must be provided");
-  if (!(slackMessage instanceof SlackMessageRoot))
-    throw new Error("slackMessage must be SlackMessage object");
+module.exports =
+  (slackMessage) =>
+  async (ctx = { runId: "", job: "", status: "in_progress" }) => {
+    if (!slackMessage) throw new Error("Slack Message object must be provided");
+    if (!(slackMessage instanceof SlackMessageRoot))
+      throw new Error("slackMessage must be SlackMessage object");
 
-  const id = `${ctx.job}_${ctx.runId}`;
-  await slackMessage.sendBlock(getBlockObject(id, ctx.status, ctx.job));
-};
+    const id = `${ctx.job}_${ctx.runId}`;
+    await slackMessage.sendBlock(getBlockObject(id, ctx.status, ctx.job));
+  };
 
 const getBlockObject = (id, status, job) => ({
   type: "section",
