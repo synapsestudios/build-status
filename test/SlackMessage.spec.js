@@ -152,7 +152,7 @@ describe("SlackMessage", () => {
     });
   });
 
-  it('Sends a message to slack channel when bot does not have access to channel history', async () => {
+  it("Sends a message to slack channel when bot does not have access to channel history", async () => {
     const message = new SlackMessage("TOKEN", {
       channel: "C12345",
       ts: "1234.1234",
