@@ -74,18 +74,22 @@ class SlackMessage extends SlackMessageRoot {
         });
       }
     } catch (e) {
-      await this._postRequest("chat.postMessage", {
-        channel: this.#_channel,
-        blocks: [
-          {
-            type: "section",
-            text: {
-              type: "plain_text",
-              text: "The notification bot must be a member of this channel for build updates to work",
+      if (e.type === "NO_HISTORY_ACCESS") {
+        await this._postRequest("chat.postMessage", {
+          channel: this.#_channel,
+          blocks: [
+            {
+              type: "section",
+              text: {
+                type: "plain_text",
+                text: "The notification bot must be a member of this channel for build updates to work",
+              },
             },
-          },
-        ],
-      });
+          ],
+        });
+      } else {
+        throw e;
+      }
     }
 
     function overwriteOrAppendBlock(messageBlocks) {
