@@ -1,4 +1,5 @@
 const got = require("got");
+const SlackGateway = require("./SlackGateway");
 
 class SlackMessageRoot {
   constructor() {
@@ -21,14 +22,13 @@ class SlackMessageRoot {
 }
 
 class SlackMessage extends SlackMessageRoot {
-  #_token = "";
   #_channel = "";
   #_ts = "";
+  #_slackGateway;
 
-  constructor(token, message = { channel: "", ts: "" }) {
+  constructor(slackToken, message = { channel: "", ts: "" }) {
     super();
-    if (!token) throw new Error("token is required");
-    this.#_token = token;
+    this.#_slackGateway = new SlackGateway(slackToken);
     this.#_channel = message.channel;
     this.#_ts = message.ts;
   }
@@ -36,22 +36,21 @@ class SlackMessage extends SlackMessageRoot {
   async _postRequest(method, body) {
     const response = await got.post(`https://slack.com/api/${method}`, {
       headers: {
-        Authorization: `Bearer ${this.#_token}`,
+        Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
       },
       json: body,
       responseType: "json",
     });
-
     if (!response.body.ok) throw new Error(response.body.error);
     return response.body;
   }
 
   async initialize(message) {
     if (!this.#_channel) throw new Error("channel is required");
-    const response = await this._postRequest("chat.postMessage", {
-      ...message,
-      channel: this.#_channel,
-    });
+    const response = await this.#_slackGateway.sendNewMessage(
+      this.#_channel,
+      message
+    );
     this.#_ts = response.message.ts;
   }
 
@@ -69,7 +68,7 @@ class SlackMessage extends SlackMessageRoot {
       `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
       {
         headers: {
-          Authorization: `Bearer ${this.#_token}`,
+          Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
         },
         responseType: "json",
       }

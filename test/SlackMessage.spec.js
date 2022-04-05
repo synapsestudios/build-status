@@ -1,7 +1,10 @@
 const { expect, use } = require("chai");
 const chaiAsPromised = require("chai-as-promised");
-const { rest } = require("msw");
+const { rest, matchRequestUrl } = require("msw");
 const { setupServer } = require("msw/node");
+
+const waitForRequest = require("./waitForRequest");
+
 const mockMessageResponse = require("./mockMessageResponse");
 const mockHistoryResponse = require("./mockHistoryResponse");
 const mockMessageFailure = () => ({
@@ -14,6 +17,7 @@ const mockMessageFailure = () => ({
 const { SlackMessage, SlackMessageRoot } = require("../src/SlackMessage");
 
 const server = setupServer();
+
 use(chaiAsPromised);
 
 describe("SlackMessage", () => {
@@ -90,6 +94,12 @@ describe("SlackMessage", () => {
       })
     );
 
+    const postEvents = waitForRequest(
+      server,
+      "POST",
+      "https://slack.com/api/chat.update"
+    );
+
     await message.sendBlock({
       type: "section",
       text: {
@@ -97,6 +107,8 @@ describe("SlackMessage", () => {
         text: ":grey_exclamation:   api starting build",
       },
     });
+
+    await postEvents;
   });
 
   it("successfully overwrites a block", async () => {
