@@ -187,6 +187,9 @@ describe("SlackMessage", () => {
       },
     });
 
-    await postEvents;
+    const req = await postEvents;
+    expect(req.body.blocks[0].text.text).to.equal(
+      "The notification bot must be a member of this channel for build updates to work"
+    );
   });
 });
