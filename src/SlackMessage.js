@@ -33,16 +33,19 @@ class SlackMessage extends SlackMessageRoot {
     this.#_ts = message.ts;
   }
 
-  async _postRequest(method, body) {
-    const response = await got.post(`https://slack.com/api/${method}`, {
-      headers: {
-        Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
-      },
-      json: body,
-      responseType: "json",
-    });
-    if (!response.body.ok) throw new Error(response.body.error);
-    return response.body;
+  async #sendNoAccessMessage() {
+    const noAccessMessage = {
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "plain_text",
+            text: "The notification bot must be a member of this channel for build updates to work",
+          },
+        },
+      ],
+    };
+    await this.#_slackGateway.sendNewMessage(this.#_channel, noAccessMessage);
   }
 
   async initialize(message) {
@@ -75,18 +78,7 @@ class SlackMessage extends SlackMessageRoot {
       }
     } catch (e) {
       if (e.type === "NO_HISTORY_ACCESS") {
-        await this._postRequest("chat.postMessage", {
-          channel: this.#_channel,
-          blocks: [
-            {
-              type: "section",
-              text: {
-                type: "plain_text",
-                text: "The notification bot must be a member of this channel for build updates to work",
-              },
-            },
-          ],
-        });
+        await this.#sendNoAccessMessage();
       } else {
         throw e;
       }
