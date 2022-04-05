@@ -1,6 +1,6 @@
 const { expect, use } = require("chai");
 const chaiAsPromised = require("chai-as-promised");
-const { rest, matchRequestUrl } = require("msw");
+const { rest } = require("msw");
 const { setupServer } = require("msw/node");
 
 const waitForRequest = require("./waitForRequest");
@@ -150,5 +150,43 @@ describe("SlackMessage", () => {
         text: ":grey_exclamation:   api starting build",
       },
     });
+  });
+
+  it("Sends a message to slack channel when bot does not have access to channel history", async () => {
+    const message = new SlackMessage("TOKEN", {
+      channel: "C12345",
+      ts: "1234.1234",
+    });
+
+    server.use(
+      rest.get(
+        "https://slack.com/api/conversations.history",
+        (_req, res, ctx) => {
+          return res(ctx.status(422));
+        }
+      )
+    );
+
+    server.use(
+      rest.post("https://slack.com/api/chat.postMessage", (_req, res, ctx) => {
+        return res(ctx.json(mockMessageResponse()));
+      })
+    );
+
+    const postEvents = waitForRequest(
+      server,
+      "POST",
+      "https://slack.com/api/chat.postMessage"
+    );
+
+    await message.sendBlock({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: ":grey_exclamation:   api starting build",
+      },
+    });
+
+    await postEvents;
   });
 });

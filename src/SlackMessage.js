@@ -64,26 +64,27 @@ class SlackMessage extends SlackMessageRoot {
     historySearchParams.append("limit", 1);
     historySearchParams.append("inclusive", "true");
 
-    const response = await got.get(
-      `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
-        },
-        responseType: "json",
+    let response;
+    try {
+      response = await got.get(
+        `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
+          },
+          responseType: "json",
+        }
+      );
+
+      if (response.body.ok) {
+        const message = response.body.messages[0];
+
+        await this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
+          text: message.text,
+          blocks: overwriteOrAppendBlock(message.blocks),
+        });
       }
-    );
-
-    if (response.body.ok) {
-      const message = response.body.messages[0];
-
-      await this._postRequest("chat.update", {
-        text: message.text,
-        channel: this.#_channel,
-        ts: this.#_ts,
-        blocks: overwriteOrAppendBlock(message.blocks),
-      });
-    } else {
+    } catch (e) {
       await this._postRequest("chat.postMessage", {
         channel: this.#_channel,
         blocks: [
