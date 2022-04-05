@@ -30,7 +30,16 @@ class SlackGateway {
       channel: channel,
     });
     return response;
-  }
+	}
+
+	async updateMessage(channel, ts, message) {
+		await this._postRequest("chat.update", {
+			text: message.text,
+			channel: channel,
+			ts: ts,
+			blocks: message.blocks,
+		});
+	}
 }
 
 module.exports = SlackGateway;

@@ -77,12 +77,16 @@ class SlackMessage extends SlackMessageRoot {
     if (response.body.ok) {
       const message = response.body.messages[0];
 
-      await this._postRequest("chat.update", {
+      await this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
         text: message.text,
-        channel: this.#_channel,
-        ts: this.#_ts,
-        blocks: overwriteOrAppendBlock(message.blocks),
-      });
+        blocks:  overwriteOrAppendBlock(message.blocks),
+      })
+      // await this._postRequest("chat.update", {
+      //   text: message.text,
+      //   channel: this.#_channel,
+      //   ts: this.#_ts,
+      //   blocks: overwriteOrAppendBlock(message.blocks),
+      // });
     } else {
       await this._postRequest("chat.postMessage", {
         channel: this.#_channel,

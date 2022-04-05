@@ -1,6 +1,6 @@
 const { expect, use } = require("chai");
 const chaiAsPromised = require("chai-as-promised");
-const { rest, matchRequestUrl } = require("msw");
+const { rest } = require("msw");
 const { setupServer } = require("msw/node");
 
 const waitForRequest = require("./waitForRequest");
