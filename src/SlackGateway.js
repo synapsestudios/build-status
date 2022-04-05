@@ -40,6 +40,25 @@ class SlackGateway {
       blocks: message.blocks,
     });
   }
+
+  async fetchMessage(channel, ts) {
+    const historySearchParams = new URLSearchParams();
+    historySearchParams.append("channel", channel);
+    historySearchParams.append("latest", ts);
+    historySearchParams.append("limit", 1);
+    historySearchParams.append("inclusive", "true");
+
+    const response = await got.get(
+      `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${this.getToken()}`,
+        },
+        responseType: "json",
+      }
+    );
+    return response;
+  }
 }
 
 module.exports = SlackGateway;

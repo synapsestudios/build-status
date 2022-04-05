@@ -58,22 +58,11 @@ class SlackMessage extends SlackMessageRoot {
     if (!this.#_channel) throw new Error("Channel is required");
     if (!this.#_ts) throw new Error("ts is required");
 
-    const historySearchParams = new URLSearchParams();
-    historySearchParams.append("channel", this.#_channel);
-    historySearchParams.append("latest", this.#_ts);
-    historySearchParams.append("limit", 1);
-    historySearchParams.append("inclusive", "true");
-
     let response;
     try {
-      response = await got.get(
-        `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.#_slackGateway.getToken()}`,
-          },
-          responseType: "json",
-        }
+      response = await this.#_slackGateway.fetchMessage(
+        this.#_channel,
+        this.#_ts
       );
 
       if (response.body.ok) {

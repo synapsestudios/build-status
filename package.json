@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha test",
     "test:watch": "mocha test -w recursive",
-    "prettier:ci": "prettier --check ."
+    "prettier:ci": "prettier --check .",
+    "prettier": "prettier --write ."
   },
   "author": "",
   "license": "ISC",
