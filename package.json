@@ -7,7 +7,8 @@
     "test": "mocha test",
     "test:watch": "mocha test -w recursive",
     "prettier:ci": "prettier --check .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "build": "ncc build index.js -o dist"
   },
   "author": "",
   "license": "ISC",
