@@ -12,6 +12,10 @@ class SlackMessageRoot {
     return;
   }
 
+  async appendHeaderLink() {
+    return;
+  }
+
   async initialize() {
     return;
   }
