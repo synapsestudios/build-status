@@ -1,4 +1,4 @@
-name: PR metadata annotation
+name: Send Chat Message
 
 on:
   pull_request:
