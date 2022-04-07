@@ -17,6 +17,7 @@
     "got": "^11.8.2"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.33.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "mocha": "^8.3.2",
