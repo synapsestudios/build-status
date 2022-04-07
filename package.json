@@ -7,7 +7,10 @@
     "test": "mocha test",
     "test:watch": "mocha test -w recursive",
     "prettier:ci": "prettier --check .",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "build": "npm run build:index && npm run build:cleanup",
+    "build:index": "ncc build index.js -o dist/index",
+    "build:cleanup": "ncc build cleanup.js -o dist/cleanup"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +20,7 @@
     "got": "^11.8.2"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.33.3",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "mocha": "^8.3.2",
