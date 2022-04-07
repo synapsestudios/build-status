@@ -48,16 +48,25 @@ class SlackGateway {
     historySearchParams.append("limit", 1);
     historySearchParams.append("inclusive", "true");
 
-    const response = await got.get(
-      `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
-      {
-        headers: {
-          Authorization: `Bearer ${this.getToken()}`,
-        },
-        responseType: "json",
-      }
-    );
-    return response;
+    try {
+      const response = await got.get(
+        `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.getToken()}`,
+          },
+          responseType: "json",
+        }
+      );
+      return response;
+    } catch (e) {
+      const unableToAccessError = new Error(
+        `Unable to fetch history in channel`
+      );
+      unableToAccessError.type = "NO_HISTORY_ACCESS";
+      unableToAccessError.channel = channel;
+      throw unableToAccessError;
+    }
   }
 }
 
