@@ -25,6 +25,6 @@ outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"
 runs:
-  using: "node12"
+  using: "node16"
   main: "index.js"
   post: "cleanup.js"
