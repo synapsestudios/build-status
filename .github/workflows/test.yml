@@ -1,0 +1,22 @@
+name: PR metadata annotation
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  Initialize_Notification:
+    name: Initialize_notification
+    runs-on: 'ubuntu-latest'
+    outputs:
+      messageTs: ${{ steps.notification.outputs.messageTs }}
+    steps:
+      - name: Set up notifications
+        id: notification
+        uses: synapsestudios/build-status@stop-shipping-node_modules
+        with:
+          type: 'trigger'
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SLACK_API_TOKEN }}
+          channel: 'C020D9LJZHT'
+          header: Build ${{ github.run_number }}
