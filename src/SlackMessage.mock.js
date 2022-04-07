@@ -12,6 +12,7 @@ class SlackMessage extends SlackMessageRoot {
     this.#_spies = {
       initialize: sinon.spy(),
       appendBlock: sinon.spy(),
+      appendHeaderLink: sinon.spy(),
     };
   }
 
@@ -23,6 +24,11 @@ class SlackMessage extends SlackMessageRoot {
 
   get ts() {
     return this.#_ts;
+  }
+
+  async appendHeaderLink(link) {
+    this.#_spies.appendHeaderLink(link);
+    return;
   }
 
   async sendBlock(block) {
