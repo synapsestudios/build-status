@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Set up notifications
         id: notification
-        uses: synapsestudios/build-status${GITHUB_REF##*/}@
+        uses: synapsestudios/build-status@${GITHUB_REF##*/}
         with:
           type: "trigger"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
