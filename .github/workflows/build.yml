@@ -1,11 +1,11 @@
 name: Send Chat Message
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  push:
+    branches:
+      - main
 
-on: [pull_request]
+# on: [pull_request]
 
 concurrency: build
 
