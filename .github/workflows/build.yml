@@ -14,8 +14,10 @@ jobs:
       - name: Install JS dependencies
         run: npm install
       - name: Build
+        run: npm run build
+      - name: Push Changes
+        continue-on-error: true
         run: |
-          npm run build
           git config --global user.email "<>"
           git config --global user.name "Github Actions Build"
           git diff-index --quiet HEAD || git commit -am "Build ${{ github.run_number }}"
