@@ -30,9 +30,28 @@ module.exports = () => ({
           block_id: "uu34",
           text: {
             type: "plain_text",
-            text: "Build Update",
+            text: ":construction: Some Cool Build :construction: ",
             emoji: true,
           },
+        },
+        {
+          type: "context",
+          block_id: "b0i",
+          elements: [
+            {
+              type: "image",
+              image_url: "https://avatars.githubusercontent.com/u/59978?v=4",
+              alt_text: "spruce-bruce",
+            },
+            {
+              type: "mrkdwn",
+              text: "*spruce-bruce* has triggered an action.\n<https://google.com|Watch Progress>",
+            },
+          ],
+        },
+        {
+          type: "divider",
+          block_id: "d00d",
         },
         {
           type: "section",
