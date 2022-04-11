@@ -1,8 +1,11 @@
 name: Send Chat Message
 
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - master
+
+concurrency: build
 
 jobs:
   Build:
