@@ -61,6 +61,53 @@ class SlackMessage extends SlackMessageRoot {
     this.#_ts = response.message.ts;
   }
 
+  async appendHeaderLink(link) {
+    if (!link) throw new Error("link must be defined");
+    if (typeof link !== "string" && typeof link !== "object")
+      throw new Error("link must be a string or an object");
+
+    let linkObj;
+    if (typeof link === "object") {
+      if (!link.text || !link.url)
+        throw new Error("Object must contain 'url' and 'text' keys");
+      linkObj = { ...link };
+    } else {
+      linkObj = { url: link, text: link };
+    }
+
+    const response = await this.#_slackGateway.fetchMessage(
+      this.#_channel,
+      this.#_ts
+    );
+
+    if (response.body.ok) {
+      const message = response.body.messages[0];
+      const bylineBlock = message.blocks[1];
+
+      const newBylineBlock = {
+        ...bylineBlock,
+        elements: [...bylineBlock.elements],
+      };
+      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}>|${linkObj.text}>`;
+
+      this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
+        text: message.text,
+        blocks: overwriteOrAppendBlock(newBylineBlock, message.blocks),
+      });
+    }
+
+    function overwriteOrAppendBlock(block, messageBlocks) {
+      let blocks = [...messageBlocks];
+      const blockIdx = blocks.findIndex((b) => b.block_id === block.block_id);
+      if (blockIdx >= 0) {
+        blocks[blockIdx] = block;
+      } else {
+        blocks = [...blocks, block];
+      }
+      return blocks;
+    }
+  }
+
   async sendBlock(block) {
     if (!this.#_channel) throw new Error("Channel is required");
     if (!this.#_ts) throw new Error("ts is required");
