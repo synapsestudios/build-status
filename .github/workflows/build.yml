@@ -1,11 +1,6 @@
 name: Send Chat Message
 
-on:
-  push:
-    branches:
-      - main
-
-# on: [pull_request]
+on: [pull_request]
 
 concurrency: build
 
@@ -37,7 +32,7 @@ jobs:
     steps:
       - name: Set up notifications
         id: notification
-        uses: synapsestudios/build-status@main
+        uses: synapsestudios/build-status${GITHUB_REF##*/}@
         with:
           type: "trigger"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -51,7 +46,7 @@ jobs:
     needs: [Test_Init]
     steps:
       - name: Set up notifications
-        uses: synapsestudios/build-status@main
+        uses: synapsestudios/build-status@${GITHUB_REF##*/}
         with:
           messageTs: ${{ needs.Test_Init.outputs.messageTs }}
           jobStatus: ${{ job.status }}
