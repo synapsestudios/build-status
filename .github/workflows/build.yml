@@ -26,6 +26,7 @@ jobs:
           git config --global user.email "<>"
           git config --global user.name "Github Actions Build"
           git diff-index --quiet HEAD || git commit -am "Build ${{ github.run_number }}"
+          git push
 
   Test_Init:
     name: Initialize Test Notification
