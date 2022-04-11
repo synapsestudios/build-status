@@ -23,7 +23,7 @@ jobs:
         run: |
           git config --global user.email "<>"
           git config --global user.name "Github Actions Build"
-          git diff-index --quiet HEAD || git commit -am "Build ${{ github.run_number }}"
+          git diff-index --quiet HEAD || git commit -am "[Automated Commit] Build ${{ github.run_number }}"
           git push
 
   Test_Init:
@@ -37,7 +37,7 @@ jobs:
         run: echo ${{ github.head_ref }}
       - name: Set up notifications
         id: notification
-        uses: synapsestudios/build-status@wire-it-up
+        uses: synapsestudios/build-status@${{ github.head_ref }}
         with:
           type: "trigger"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
