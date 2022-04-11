@@ -3,7 +3,7 @@ name: Send Chat Message
 on:
   push:
     branches:
-      - master
+      - main
 
 concurrency: build
 
