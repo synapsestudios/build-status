@@ -33,10 +33,11 @@ jobs:
     outputs:
       messageTs: ${{ steps.notification.outputs.messageTs }}
     steps:
-      - uses: actions/checkout@v2
+      - name: what
+        run: echo ${{ github.head_ref }}
       - name: Set up notifications
         id: notification
-        uses: synapsestudios/build-status@${{ github.head_ref }}
+        uses: synapsestudios/build-status@wire-it-up
         with:
           type: "trigger"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +51,7 @@ jobs:
     needs: [Test_Init]
     steps:
       - name: Set up notifications
-        uses: synapsestudios/build-status@${{ github.head_ref }}
+        uses: synapsestudios/build-status@wire-it-up
         with:
           messageTs: ${{ needs.Test_Init.outputs.messageTs }}
           jobStatus: ${{ job.status }}
