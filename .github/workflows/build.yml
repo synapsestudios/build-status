@@ -10,6 +10,9 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
       - uses: c-hive/gha-npm-cache@v1
       - name: Install JS dependencies
         run: npm install
@@ -32,7 +35,7 @@ jobs:
     steps:
       - name: Set up notifications
         id: notification
-        uses: synapsestudios/build-status@${{ GITHUB_REF##*/ }}
+        uses: synapsestudios/build-status@${{ github.head_ref }}
         with:
           type: "trigger"
           githubToken: ${{ secrets.GITHUB_TOKEN }}
@@ -46,7 +49,7 @@ jobs:
     needs: [Test_Init]
     steps:
       - name: Set up notifications
-        uses: synapsestudios/build-status@${GITHUB_REF##*/}
+        uses: synapsestudios/build-status@${{ github.head_ref }}
         with:
           messageTs: ${{ needs.Test_Init.outputs.messageTs }}
           jobStatus: ${{ job.status }}
