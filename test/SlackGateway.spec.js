@@ -14,7 +14,6 @@ const mockMessageFailure = () => ({
   response_metadata: { warnings: ["missing_charset"] },
 });
 
-const { SlackMessage, SlackMessageRoot } = require("../src/SlackMessage");
 const { SlackGateway, SlackGatewayRoot } = require("../src/SlackGateway");
 
 const server = setupServer();
@@ -100,7 +99,69 @@ describe("SlackGateway", () => {
     });
   });
 
-  describe("updateMessage", () => {});
+  describe("updateMessage", () => {
+    it("throws when channel isn't provided", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(gateway.updateMessage()).to.be.rejectedWith(
+        "channel is required"
+      );
+    });
+
+    it("throws when ts isn't provided", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(gateway.updateMessage("channel")).to.be.rejectedWith(
+        "ts is required"
+      );
+    });
+
+    it("throws when message isn't provided", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(
+        gateway.updateMessage("channel", "1234.1234")
+      ).to.be.rejectedWith("message is required");
+    });
+
+    it("throws when message isn't an object", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(
+        gateway.updateMessage("channel", "1234.1234", "message")
+      ).to.be.rejectedWith("message is not an object");
+    });
+
+    it("updates a message in slack using their api", async () => {
+      const mockMessage = mockMessageResponse();
+      server.use(
+        rest.post("https://slack.com/api/chat.update", (_req, res, ctx) =>
+          res(ctx.json(mockMessage))
+        )
+      );
+      const postEvents = waitForRequest(
+        server,
+        "POST",
+        "https://slack.com/api/chat.update"
+      );
+
+      const gateway = new SlackGateway("TOKEN");
+      await gateway.updateMessage("channel", mockMessage.ts, {
+        text: "some text goes here",
+        blocks: [
+          {
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: `:construction: BUILD :construction: `,
+              emoji: true,
+            },
+          },
+        ],
+      });
+
+      const req = await postEvents;
+      expect(req.body.text).to.equal("some text goes here");
+      expect(req.body.ts).to.equal(mockMessage.ts);
+      expect(req.body.channel).to.equal("channel");
+    });
+  });
 
   describe("fetchMessage", () => {});
 });
