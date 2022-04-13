@@ -6,6 +6,10 @@ class SlackGatewayRoot {
       throw new TypeError("Cannot construct Abstract instances directly");
     }
   }
+
+  async sendNewMessage() {
+    return;
+  }
 }
 
 class SlackGateway extends SlackGatewayRoot {
