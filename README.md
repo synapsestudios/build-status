@@ -45,8 +45,8 @@ Because we create and update a single slack message you need to initialize the m
           name: Test Job
 
       - uses: actions/checkout@v2
-		  - name: run tests
-			  run: npm i && npm test
+      - name: run tests
+        run: npm i && npm test
 ```
 
 ### Appending a Link to the Header
