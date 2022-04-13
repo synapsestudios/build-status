@@ -50,6 +50,12 @@ class SlackGateway extends SlackGatewayRoot {
   }
 
   async updateMessage(channel, ts, message) {
+    if (!channel) throw new Error("channel is required");
+    if (!ts) throw new Error("ts is required");
+    if (!message) throw new Error("message is required");
+    if (typeof message !== "object")
+      throw new Error("message is not an object");
+
     await this._postRequest("chat.update", {
       text: message.text,
       channel: channel,
