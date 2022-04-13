@@ -2,7 +2,7 @@ name: "Build Status Notifier"
 description: "Notify slack about complex builds"
 inputs:
   type:
-    description: "If type is set to 'trigger' then a new slack message will be started"
+    description: "set to 'trigger' to initialize message or 'link' to append a header link. Default value is 'update' which will report job status"
     default: "update"
   messageTs:
     description: "Timestamp of a previous message. Required for fail and success notifications"

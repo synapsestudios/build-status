@@ -23,5 +23,7 @@ module.exports = async function getActionParams() {
     messageTs: core.getInput("messageTs"),
     token: core.getInput("token"),
     jobStatus: core.getInput("jobStatus"),
+    link: core.getInput("link"),
+    link_text: core.getInput("link_text"),
   };
 };

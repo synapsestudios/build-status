@@ -16197,7 +16197,7 @@ class SlackMessage extends SlackMessageRoot {
         ...bylineBlock,
         elements: [...bylineBlock.elements],
       };
-      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}>|${linkObj.text}>`;
+      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}|${linkObj.text}>`;
 
       this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
         text: message.text,
@@ -16266,6 +16266,24 @@ module.exports = { SlackMessage, SlackMessageRoot };
 
 /***/ }),
 
+/***/ 9098:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { SlackMessageRoot } = __nccwpck_require__(8054);
+
+module.exports = (slackMessage) => async (link) => {
+  if (!slackMessage) throw new Error("Slack Message object must be provided");
+  if (!(slackMessage instanceof SlackMessageRoot))
+    throw new Error("slackMessage must be SlackMessage object");
+  if (!link) throw new Error("link must be provided");
+
+  await slackMessage.appendHeaderLink(link);
+  return slackMessage.ts;
+};
+
+
+/***/ }),
+
 /***/ 3509:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -16294,6 +16312,8 @@ module.exports = async function getActionParams() {
     messageTs: core.getInput("messageTs"),
     token: core.getInput("token"),
     jobStatus: core.getInput("jobStatus"),
+    link: core.getInput("link"),
+    link_text: core.getInput("link_text"),
   };
 };
 
@@ -16595,7 +16615,33 @@ const core = __nccwpck_require__(2186);
 const { SlackMessage } = __nccwpck_require__(8054);
 const initializeMessage = __nccwpck_require__(4285);
 const reportJobStatus = __nccwpck_require__(1013);
+const appendHeaderLink = __nccwpck_require__(9098);
 const getActionParams = __nccwpck_require__(3509);
+
+const useCaseMap = {
+  trigger: async (slackMessage, params) => {
+    const messageTs = await initializeMessage(slackMessage)(
+      { name: params.senderName, avatar: params.senderAvatar },
+      params.runUrl,
+      params.header
+    );
+    core.setOutput("messageTs", messageTs);
+  },
+  update: async (slackMessage, params) => {
+    await reportJobStatus(slackMessage)({
+      job: params.job,
+      runId: params.runId,
+      status: "in_progress",
+    });
+  },
+  link: async (slackMessage, params) => {
+    console.log(params);
+    await appendHeaderLink(slackMessage)({
+      url: params.link,
+      text: params.link_text,
+    });
+  },
+};
 
 const execute = async function () {
   const params = await getActionParams();
@@ -16605,20 +16651,12 @@ const execute = async function () {
     ts: params.messageTs,
   });
 
-  if (params.type === "trigger") {
-    const messageTs = await initializeMessage(slackMessage)(
-      { name: params.senderName, avatar: params.senderAvatar },
-      params.runUrl,
-      params.header
+  if (!useCaseMap[params.type])
+    throw new Error(
+      `type can be "trigger" or "update". You provided "${params.type}"`
     );
-    core.setOutput("messageTs", messageTs);
-  } else {
-    await reportJobStatus(slackMessage)({
-      job: params.job,
-      runId: params.runId,
-      status: "in_progress",
-    });
-  }
+
+  await useCaseMap[params.type](slackMessage, params);
 };
 
 execute().catch((e) => core.setFailed(e.message));
