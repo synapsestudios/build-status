@@ -9,8 +9,8 @@
     "prettier:ci": "prettier --check .",
     "prettier": "prettier --write .",
     "build": "npm run build:index && npm run build:cleanup",
-    "build:index": "ncc build index.js -o dist/index",
-    "build:cleanup": "ncc build cleanup.js -o dist/cleanup",
+    "build:index": "ncc --minify build index.js -o dist/index",
+    "build:cleanup": "ncc --minify build cleanup.js -o dist/cleanup",
     "prepare": "husky install"
   },
   "author": "",
