@@ -16597,6 +16597,17 @@ const initializeMessage = __nccwpck_require__(4285);
 const reportJobStatus = __nccwpck_require__(1013);
 const getActionParams = __nccwpck_require__(3509);
 
+const actionMap = {
+  trigger: async (params) => {
+    const messageTs = await initializeMessage(slackMessage)(
+      { name: params.senderName, avatar: params.senderAvatar },
+      params.runUrl,
+      params.header
+    );
+    core.setOutput("messageTs", messageTs);
+  },
+};
+
 const execute = async function () {
   const params = await getActionParams();
 
@@ -16606,12 +16617,13 @@ const execute = async function () {
   });
 
   if (params.type === "trigger") {
-    const messageTs = await initializeMessage(slackMessage)(
-      { name: params.senderName, avatar: params.senderAvatar },
-      params.runUrl,
-      params.header
-    );
-    core.setOutput("messageTs", messageTs);
+    await actionMap.trigger(params);
+    // const messageTs = await initializeMessage(slackMessage)(
+    //   { name: params.senderName, avatar: params.senderAvatar },
+    //   params.runUrl,
+    //   params.header
+    // );
+    // core.setOutput("messageTs", messageTs);
   } else {
     await reportJobStatus(slackMessage)({
       job: params.job,
