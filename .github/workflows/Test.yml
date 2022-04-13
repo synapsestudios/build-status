@@ -1,0 +1,62 @@
+name: Acceptance Test
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  Test_Init:
+    name: Initialize Test Notification
+    runs-on: "ubuntu-latest"
+    outputs:
+      messageTs: ${{ steps.notification.outputs.messageTs }}
+    steps:
+      - name: Set up notifications
+        id: notification
+        uses: synapsestudios/build-status@main
+        with:
+          type: "trigger"
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SLACK_API_TOKEN }}
+          channel: "C020D9LJZHT"
+          header: Build ${{ github.run_number }}
+
+  Test_Job_Status:
+    name: Send Update to Test Notification
+    runs-on: "ubuntu-latest"
+    needs: [Test_Init]
+    steps:
+      - name: Notify Job Status
+        uses: synapsestudios/build-status@main
+        with:
+          messageTs: ${{ needs.Test_Init.outputs.messageTs }}
+          jobStatus: ${{ job.status }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SLACK_API_TOKEN }}
+          channel: "C020D9LJZHT"
+          name: Test Job
+
+  Test_Link:
+    name: Append header link
+    runs-on: "ubuntu-latest"
+    needs: [Test_Init, Test_Job_Status]
+    steps:
+      - name: Notify Job Status
+        uses: synapsestudios/build-status@main
+        with:
+          messageTs: ${{ needs.Test_Init.outputs.messageTs }}
+          jobStatus: ${{ job.status }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SLACK_API_TOKEN }}
+          channel: "C020D9LJZHT"
+          name: Test Link
+      - name: Append Header Link!
+        uses: synapsestudios/build-status@main
+        with:
+          type: "link"
+          messageTs: ${{ needs.Test_Init.outputs.messageTs }}
+          jobStatus: ${{ job.status }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.SLACK_API_TOKEN }}
+          channel: "C020D9LJZHT"
+          link: "http://www.google.com"
