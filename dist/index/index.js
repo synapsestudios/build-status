@@ -16623,11 +16623,12 @@ const execute = async function () {
     ts: params.messageTs,
   });
 
-  if (params.type === "trigger") {
-    await useCaseMap.trigger(slackMessage, params);
-  } else {
-    await useCaseMap.update(slackMessage, params);
-  }
+  if (!useCaseMap[params.type])
+    throw new Error(
+      `type can be "trigger" or "update". You provided "${params.type}"`
+    );
+
+  await useCaseMap[params.type](slackMessage, params);
 };
 
 execute().catch((e) => core.setFailed(e.message));
