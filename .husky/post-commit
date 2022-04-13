@@ -2,4 +2,4 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npm run build
-git commit -am "[Automated Commit] Builds recent changes"
+git commit -am "[Automated Commit] Builds recent changes" --no-verify
