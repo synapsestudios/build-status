@@ -4,7 +4,7 @@ const initializeMessage = require("./src/initializeMessage");
 const reportJobStatus = require("./src/reportJobStatus");
 const getActionParams = require("./src/getActionParams");
 
-const actionMap = {
+const useCaseMap = {
   trigger: async (slackMessage, params) => {
     const messageTs = await initializeMessage(slackMessage)(
       { name: params.senderName, avatar: params.senderAvatar },
@@ -31,9 +31,9 @@ const execute = async function () {
   });
 
   if (params.type === "trigger") {
-    await actionMap.trigger(slackMessage, params);
+    await useCaseMap.trigger(slackMessage, params);
   } else {
-    await actionMap.trigger(slackMessage, params);
+    await useCaseMap.update(slackMessage, params);
   }
 };
 

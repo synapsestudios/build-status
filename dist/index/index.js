@@ -16597,14 +16597,21 @@ const initializeMessage = __nccwpck_require__(4285);
 const reportJobStatus = __nccwpck_require__(1013);
 const getActionParams = __nccwpck_require__(3509);
 
-const actionMap = {
-  trigger: async (params) => {
+const useCaseMap = {
+  trigger: async (slackMessage, params) => {
     const messageTs = await initializeMessage(slackMessage)(
       { name: params.senderName, avatar: params.senderAvatar },
       params.runUrl,
       params.header
     );
     core.setOutput("messageTs", messageTs);
+  },
+  update: async (slackMessage, params) => {
+    await reportJobStatus(slackMessage)({
+      job: params.job,
+      runId: params.runId,
+      status: "in_progress",
+    });
   },
 };
 
@@ -16617,19 +16624,9 @@ const execute = async function () {
   });
 
   if (params.type === "trigger") {
-    await actionMap.trigger(params);
-    // const messageTs = await initializeMessage(slackMessage)(
-    //   { name: params.senderName, avatar: params.senderAvatar },
-    //   params.runUrl,
-    //   params.header
-    // );
-    // core.setOutput("messageTs", messageTs);
+    await useCaseMap.trigger(slackMessage, params);
   } else {
-    await reportJobStatus(slackMessage)({
-      job: params.job,
-      runId: params.runId,
-      status: "in_progress",
-    });
+    await useCaseMap.update(slackMessage, params);
   }
 };
 
