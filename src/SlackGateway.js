@@ -1,13 +1,22 @@
 const got = require("got");
 
-class SlackGateway {
+class SlackGatewayRoot {
+  constructor() {
+    if (new.target === SlackGatewayRoot) {
+      throw new TypeError("Cannot construct Abstract instances directly");
+    }
+  }
+}
+
+class SlackGateway extends SlackGatewayRoot {
   #_slackAuthToken = "";
   constructor(slackAuthtoken) {
+    super();
     if (!slackAuthtoken) throw new Error("token is required");
     this.#_slackAuthToken = slackAuthtoken;
   }
 
-  getToken() {
+  #getToken() {
     return this.#_slackAuthToken;
   }
 
@@ -25,6 +34,10 @@ class SlackGateway {
 
   async sendNewMessage(channel, message) {
     if (!channel) throw new Error("channel is required");
+    if (!message) throw new Error("message is required");
+    if (typeof message !== "object")
+      throw new Error("message is not an object");
+
     const response = await this._postRequest("chat.postMessage", {
       ...message,
       channel: channel,
@@ -53,7 +66,7 @@ class SlackGateway {
         `https://slack.com/api/conversations.history?${historySearchParams.toString()}`,
         {
           headers: {
-            Authorization: `Bearer ${this.getToken()}`,
+            Authorization: `Bearer ${this.#getToken()}`,
           },
           responseType: "json",
         }
@@ -70,4 +83,4 @@ class SlackGateway {
   }
 }
 
-module.exports = SlackGateway;
+module.exports = { SlackGateway, SlackGatewayRoot };
