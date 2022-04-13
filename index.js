@@ -5,13 +5,20 @@ const reportJobStatus = require("./src/reportJobStatus");
 const getActionParams = require("./src/getActionParams");
 
 const actionMap = {
-  trigger: async (params) => {
+  trigger: async (slackMessage, params) => {
     const messageTs = await initializeMessage(slackMessage)(
       { name: params.senderName, avatar: params.senderAvatar },
       params.runUrl,
       params.header
     );
     core.setOutput("messageTs", messageTs);
+  },
+  update: async (slackMessage, params) => {
+    await reportJobStatus(slackMessage)({
+      job: params.job,
+      runId: params.runId,
+      status: "in_progress",
+    });
   },
 };
 
@@ -24,19 +31,9 @@ const execute = async function () {
   });
 
   if (params.type === "trigger") {
-    await actionMap.trigger(params);
-    // const messageTs = await initializeMessage(slackMessage)(
-    //   { name: params.senderName, avatar: params.senderAvatar },
-    //   params.runUrl,
-    //   params.header
-    // );
-    // core.setOutput("messageTs", messageTs);
+    await actionMap.trigger(slackMessage, params);
   } else {
-    await reportJobStatus(slackMessage)({
-      job: params.job,
-      runId: params.runId,
-      status: "in_progress",
-    });
+    await actionMap.trigger(slackMessage, params);
   }
 };
 
