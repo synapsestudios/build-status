@@ -100,3 +100,5 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           token: ${{ secrets.SLACK_API_TOKEN }}
           channel: "C020D9LJZHT"
+          link: "http://www.google.com"
+          link_text: "Google!"
