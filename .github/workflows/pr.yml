@@ -91,7 +91,7 @@ jobs:
           token: ${{ secrets.SLACK_API_TOKEN }}
           channel: "C020D9LJZHT"
           name: Test Link
-      - name: Append Header Link
+      - name: Append Header Link!
         uses: synapsestudios/build-status@wire-it-up
         with:
           type: "link"
