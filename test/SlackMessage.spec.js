@@ -29,7 +29,7 @@ describe("SlackMessage", () => {
   });
 
   it("is unable to instantiate base class", () => {
-    expect(() => new SlackMessageRoot()).to.throw;
+    expect(() => new SlackMessageRoot()).to.throw();
   });
 
   it("Throws when token is missing", async () => {
