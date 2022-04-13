@@ -57,7 +57,6 @@ Because we create and update a single slack message you need to initialize the m
         with:
           type: "link"
           messageTs: ${{ needs.Initialize_Slack_Message.outputs.messageTs }}
-          jobStatus: ${{ job.status }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           token: ${{ secrets.SLACK_API_TOKEN }}
           channel: "C020D9LJZHT"
