@@ -21,6 +21,10 @@ inputs:
   header:
     description: "Give me notification header please!"
     default: "Build"
+  link:
+    description: "when using the 'link' type you need to supply me with a url!"
+  link_text:
+    description: "when using thhe 'link' type you can supply me with some link text to use"
 outputs:
   messageTs:
     description: "The timestamp of the message. Used to identify the message in future steps"
