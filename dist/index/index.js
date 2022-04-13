@@ -16197,7 +16197,7 @@ class SlackMessage extends SlackMessageRoot {
         ...bylineBlock,
         elements: [...bylineBlock.elements],
       };
-      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}>|${linkObj.text}>`;
+      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}|${linkObj.text}>`;
 
       this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
         text: message.text,
