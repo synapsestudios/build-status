@@ -22,6 +22,7 @@ const useCaseMap = {
     });
   },
   link: async (slackMessage, params) => {
+    console.log(params);
     await appendHeaderLink(slackMessage)({
       url: params.link,
       text: params.link_text,
