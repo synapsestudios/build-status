@@ -263,11 +263,11 @@ describe("SlackMessage", () => {
       expect(response.body.ts).to.equal("1234.1234");
       expect(response.body.channel).to.equal("C12345");
       expect(response.body.blocks[1].elements[1].text).to.have.string(
-        "<https://google.com>|https://google.com>"
+        "<https://google.com|https://google.com>"
       );
     });
 
-    it("Successfully sends a simple url", async () => {
+    it("Successfully sends a link object", async () => {
       const message = new SlackMessage("TOKEN", {
         channel: "C12345",
         ts: "1234.1234",
@@ -303,7 +303,7 @@ describe("SlackMessage", () => {
       expect(response.body.ts).to.equal("1234.1234");
       expect(response.body.channel).to.equal("C12345");
       expect(response.body.blocks[1].elements[1].text).to.have.string(
-        "<https://google.com>|WOW COOL>"
+        "<https://google.com|WOW COOL>"
       );
     });
   });

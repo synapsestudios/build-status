@@ -2,7 +2,33 @@ const core = require("@actions/core");
 const { SlackMessage } = require("./src/SlackMessage");
 const initializeMessage = require("./src/initializeMessage");
 const reportJobStatus = require("./src/reportJobStatus");
+const appendHeaderLink = require("./src/appendHeaderLink");
 const getActionParams = require("./src/getActionParams");
+
+const useCaseMap = {
+  trigger: async (slackMessage, params) => {
+    const messageTs = await initializeMessage(slackMessage)(
+      { name: params.senderName, avatar: params.senderAvatar },
+      params.runUrl,
+      params.header
+    );
+    core.setOutput("messageTs", messageTs);
+  },
+  update: async (slackMessage, params) => {
+    await reportJobStatus(slackMessage)({
+      job: params.job,
+      runId: params.runId,
+      status: "in_progress",
+    });
+  },
+  link: async (slackMessage, params) => {
+    console.log(params);
+    await appendHeaderLink(slackMessage)({
+      url: params.link,
+      text: params.link_text,
+    });
+  },
+};
 
 const execute = async function () {
   const params = await getActionParams();
@@ -12,20 +38,12 @@ const execute = async function () {
     ts: params.messageTs,
   });
 
-  if (params.type === "trigger") {
-    const messageTs = await initializeMessage(slackMessage)(
-      { name: params.senderName, avatar: params.senderAvatar },
-      params.runUrl,
-      params.header
+  if (!useCaseMap[params.type])
+    throw new Error(
+      `type can be "trigger" or "update". You provided "${params.type}"`
     );
-    core.setOutput("messageTs", messageTs);
-  } else {
-    await reportJobStatus(slackMessage)({
-      job: params.job,
-      runId: params.runId,
-      status: "in_progress",
-    });
-  }
+
+  await useCaseMap[params.type](slackMessage, params);
 };
 
 execute().catch((e) => core.setFailed(e.message));
