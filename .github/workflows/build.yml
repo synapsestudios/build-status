@@ -5,27 +5,6 @@ on: [pull_request]
 concurrency: build
 
 jobs:
-  Build:
-    name: Build
-    runs-on: "ubuntu-latest"
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-
-      - uses: c-hive/gha-npm-cache@v1
-      - name: Install JS dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-      - name: Push Changes
-        continue-on-error: true
-        run: |
-          git config --global user.email "<>"
-          git config --global user.name "Github Actions Build"
-          git diff-index --quiet HEAD || git commit -am "[Automated Commit] Build ${{ github.run_number }}"
-          git push
-
   Test_Init:
     name: Initialize Test Notification
     runs-on: "ubuntu-latest"
