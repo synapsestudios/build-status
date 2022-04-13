@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const { SlackMessage } = require("./src/SlackMessage");
 const initializeMessage = require("./src/initializeMessage");
 const reportJobStatus = require("./src/reportJobStatus");
+const appendHeaderLink = require("./src/appendHeaderLink");
 const getActionParams = require("./src/getActionParams");
 
 const useCaseMap = {
@@ -18,6 +19,12 @@ const useCaseMap = {
       job: params.job,
       runId: params.runId,
       status: "in_progress",
+    });
+  },
+  link: async (slackMessage, params) => {
+    await appendHeaderLinks(slackMessage)({
+      url: "http://google.com",
+      text: "HECK YES",
     });
   },
 };

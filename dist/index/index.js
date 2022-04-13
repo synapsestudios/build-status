@@ -16266,6 +16266,24 @@ module.exports = { SlackMessage, SlackMessageRoot };
 
 /***/ }),
 
+/***/ 9098:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { SlackMessageRoot } = __nccwpck_require__(8054);
+
+module.exports = (slackMessage) => async (link) => {
+  if (!slackMessage) throw new Error("Slack Message object must be provided");
+  if (!(slackMessage instanceof SlackMessageRoot))
+    throw new Error("slackMessage must be SlackMessage object");
+  if (!link) throw new Error("link must be provided");
+
+  await slackMessage.appendHeaderLink(link);
+  return slackMessage.ts;
+};
+
+
+/***/ }),
+
 /***/ 3509:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -16595,6 +16613,7 @@ const core = __nccwpck_require__(2186);
 const { SlackMessage } = __nccwpck_require__(8054);
 const initializeMessage = __nccwpck_require__(4285);
 const reportJobStatus = __nccwpck_require__(1013);
+const appendHeaderLink = __nccwpck_require__(9098);
 const getActionParams = __nccwpck_require__(3509);
 
 const useCaseMap = {
@@ -16611,6 +16630,12 @@ const useCaseMap = {
       job: params.job,
       runId: params.runId,
       status: "in_progress",
+    });
+  },
+  link: async (slackMessage, params) => {
+    await appendHeaderLinks(slackMessage)({
+      url: "http://google.com",
+      text: "HECK YES",
     });
   },
 };
