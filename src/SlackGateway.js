@@ -65,6 +65,8 @@ class SlackGateway extends SlackGatewayRoot {
   }
 
   async fetchMessage(channel, ts) {
+    if (!channel) throw new Error("channel is required");
+    if (!ts) throw new Error("ts is required");
     const historySearchParams = new URLSearchParams();
     historySearchParams.append("channel", channel);
     historySearchParams.append("latest", ts);
