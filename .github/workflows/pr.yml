@@ -52,8 +52,6 @@ jobs:
     outputs:
       messageTs: ${{ steps.notification.outputs.messageTs }}
     steps:
-      - name: what
-        run: echo ${{ github.head_ref }}
       - name: Set up notifications
         id: notification
         uses: synapsestudios/build-status@wire-it-up
