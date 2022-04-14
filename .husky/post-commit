@@ -1,5 +1,8 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+echo "Running Build"
 npm run build
+
+echo "Committing Build"
 git commit -am "[Automated Commit] Builds recent changes" --no-verify
