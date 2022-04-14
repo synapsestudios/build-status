@@ -163,5 +163,54 @@ describe("SlackGateway", () => {
     });
   });
 
-  describe("fetchMessage", () => {});
+  describe("fetchMessage", () => {
+    it("rejects when channel isn't provied", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(gateway.fetchMessage()).to.be.rejectedWith(
+        "channel is required"
+      );
+    });
+
+    it("rejects when ts isn't provided", () => {
+      const gateway = new SlackGateway("TOKEN");
+      return expect(gateway.fetchMessage("channel")).to.be.rejectedWith(
+        "ts is required"
+      );
+    });
+
+    it("Fetches an existing message from the slack api", async () => {
+      const mockResponse = mockHistoryResponse();
+      server.use(
+        rest.get(
+          "https://slack.com/api/conversations.history",
+          (_req, res, ctx) => {
+            return res(ctx.json(mockResponse));
+          }
+        )
+      );
+
+      const requestEvents = waitForRequest(
+        server,
+        "GET",
+        "https://slack.com/api/conversations.history"
+      );
+
+      const gateway = new SlackGateway("TOKEN");
+      const message = await gateway.fetchMessage(
+        mockResponse.channel,
+        mockResponse.ts
+      );
+
+      expect(message.body.channel).to.equal(mockResponse.channel);
+      expect(message.body.ts).to.equal(mockResponse.ts);
+      expect(message.body.messages).to.deep.equal(mockResponse.messages);
+
+      const req = await requestEvents;
+
+      expect(req.url.searchParams.get("channel")).to.equal(
+        mockResponse.channel
+      );
+      expect(req.url.searchParams.get("latest")).to.equal(mockResponse.ts);
+    });
+  });
 });
