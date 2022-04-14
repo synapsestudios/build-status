@@ -1,6 +1,6 @@
 const core = require("@actions/core");
 const { SlackMessage } = require("./src/SlackMessage");
-const { SlackGateway } = require("./src/SlackMessage");
+const { SlackGateway } = require("./src/SlackGateway");
 const initializeMessage = require("./src/initializeMessage");
 const reportJobStatus = require("./src/reportJobStatus");
 const appendHeaderLink = require("./src/appendHeaderLink");
