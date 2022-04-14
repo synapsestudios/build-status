@@ -22,6 +22,8 @@ class SlackMessageRoot {
   async sendBlock() {
     return;
   }
+
+  async x() {}
 }
 
 class SlackMessage extends SlackMessageRoot {
