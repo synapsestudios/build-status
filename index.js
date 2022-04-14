@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const { SlackMessage } = require("./src/SlackMessage");
+const { SlackGateway } = require("./src/SlackMessage");
 const initializeMessage = require("./src/initializeMessage");
 const reportJobStatus = require("./src/reportJobStatus");
 const appendHeaderLink = require("./src/appendHeaderLink");
@@ -32,7 +33,8 @@ const useCaseMap = {
 const execute = async function () {
   const params = await getActionParams();
 
-  const slackMessage = new SlackMessage(params.token, {
+  const slackGateway = new SlackGateway(params.token);
+  const slackMessage = new SlackMessage(slackGateway, {
     channel: params.channel,
     ts: params.messageTs,
   });
