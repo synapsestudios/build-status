@@ -33,8 +33,7 @@ const useCaseMap = {
 const execute = async function () {
   const params = await getActionParams();
 
-  const slackGateway = new SlackGateway(params.token);
-  const slackMessage = new SlackMessage(slackGateway, {
+  const slackMessage = new SlackMessage(params.token, {
     channel: params.channel,
     ts: params.messageTs,
   });
