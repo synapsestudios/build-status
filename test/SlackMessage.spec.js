@@ -15,6 +15,7 @@ const mockMessageFailure = () => ({
 });
 
 const { SlackMessage, SlackMessageRoot } = require("../src/SlackMessage");
+const { SlackGateway } = require("../src/SlackGateway");
 
 const server = setupServer();
 
@@ -59,6 +60,11 @@ describe("SlackMessage", () => {
       ],
     });
     expect(message.ts).to.eq(mockMessage.ts);
+  });
+
+  it("allows me to inject a SlackGateway instance", () => {
+    const gateway = new SlackGateway("TOKEN");
+    const message = new SlackMessage(gateway);
   });
 
   it("initialize responds predictably when there are errors in the slack response", async () => {

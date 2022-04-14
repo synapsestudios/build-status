@@ -37,6 +37,10 @@ describe("SlackGateway", () => {
     expect(() => new SlackGateway()).to.throw();
   });
 
+  it("Throws when slack token is an object", () => {
+    expect(() => new SlackGateway({})).to.throw();
+  });
+
   it("initializes successfully when slack token is provided", () => {
     new SlackGateway("TOKEN");
   });
