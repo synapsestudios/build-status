@@ -17,6 +17,8 @@ class SlackGateway extends SlackGatewayRoot {
   constructor(slackAuthtoken) {
     super();
     if (!slackAuthtoken) throw new Error("token is required");
+    if (typeof slackAuthtoken !== "string")
+      throw new Error("slack token must be a string");
     this.#_slackAuthToken = slackAuthtoken;
   }
 
