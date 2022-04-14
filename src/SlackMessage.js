@@ -1,5 +1,5 @@
 const got = require("got");
-const { SlackGateway } = require("./SlackGateway");
+const { SlackGateway, SlackGatewayRoot } = require("./SlackGateway");
 
 class SlackMessageRoot {
   constructor() {
