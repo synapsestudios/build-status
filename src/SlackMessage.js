@@ -1,4 +1,3 @@
-const got = require("got");
 const { SlackGateway, SlackGatewayRoot } = require("./SlackGateway");
 
 class SlackMessageRoot {
@@ -32,7 +31,12 @@ class SlackMessage extends SlackMessageRoot {
 
   constructor(slackToken, message = { channel: "", ts: "" }) {
     super();
-    this.#_slackGateway = new SlackGateway(slackToken);
+
+    if (slackToken instanceof SlackGatewayRoot) {
+      this.#_slackGateway = slackToken;
+    } else {
+      this.#_slackGateway = new SlackGateway(slackToken);
+    }
     this.#_channel = message.channel;
     this.#_ts = message.ts;
   }
