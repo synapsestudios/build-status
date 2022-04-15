@@ -4,6 +4,3 @@
 
 echo "Running Build"
 npm run build
-
-echo "Committing Build"
-git commit -am "[Automated Commit] Builds recent changes" --no-verify

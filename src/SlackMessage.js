@@ -79,26 +79,23 @@ class SlackMessage extends SlackMessageRoot {
       linkObj = { url: link, text: link };
     }
 
-    const response = await this.#_slackGateway.fetchMessage(
+    const message = await this.#_slackGateway.fetchMessage(
       this.#_channel,
       this.#_ts
     );
 
-    if (response.body.ok) {
-      const message = response.body.messages[0];
-      const bylineBlock = message.blocks[1];
+    const bylineBlock = message.blocks[1];
 
-      const newBylineBlock = {
-        ...bylineBlock,
-        elements: [...bylineBlock.elements],
-      };
-      newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}|${linkObj.text}>`;
+    const newBylineBlock = {
+      ...bylineBlock,
+      elements: [...bylineBlock.elements],
+    };
+    newBylineBlock.elements[1].text = `${newBylineBlock.elements[1].text} | <${linkObj.url}|${linkObj.text}>`;
 
-      this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
-        text: message.text,
-        blocks: overwriteOrAppendBlock(newBylineBlock, message.blocks),
-      });
-    }
+    this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
+      text: message.text,
+      blocks: overwriteOrAppendBlock(newBylineBlock, message.blocks),
+    });
 
     function overwriteOrAppendBlock(block, messageBlocks) {
       let blocks = [...messageBlocks];
@@ -116,21 +113,16 @@ class SlackMessage extends SlackMessageRoot {
     if (!this.#_channel) throw new Error("Channel is required");
     if (!this.#_ts) throw new Error("ts is required");
 
-    let response;
     try {
-      response = await this.#_slackGateway.fetchMessage(
+      const message = await this.#_slackGateway.fetchMessage(
         this.#_channel,
         this.#_ts
       );
 
-      if (response.body.ok) {
-        const message = response.body.messages[0];
-
-        await this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
-          text: message.text,
-          blocks: overwriteOrAppendBlock(message.blocks),
-        });
-      }
+      await this.#_slackGateway.updateMessage(this.#_channel, this.#_ts, {
+        text: message.text,
+        blocks: overwriteOrAppendBlock(message.blocks),
+      });
     } catch (e) {
       if (e.type === "NO_HISTORY_ACCESS") {
         await this.#sendNoAccessMessage();

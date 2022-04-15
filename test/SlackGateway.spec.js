@@ -205,9 +205,7 @@ describe("SlackGateway", () => {
         mockResponse.ts
       );
 
-      expect(message.body.channel).to.equal(mockResponse.channel);
-      expect(message.body.ts).to.equal(mockResponse.ts);
-      expect(message.body.messages).to.deep.equal(mockResponse.messages);
+      expect(message).to.deep.equal(mockResponse.messages[0]);
 
       const req = await requestEvents;
 
