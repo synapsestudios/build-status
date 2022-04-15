@@ -134,31 +134,17 @@ describe("SlackMessage", () => {
   });
 
   it("Sends a message to slack channel when bot does not have access to channel history", async () => {
-    const message = new SlackMessage("TOKEN", {
+    const gateway = new SlackGateway();
+    const unableToAccessError = new Error(`Unable to fetch history in channel`);
+    unableToAccessError.type = "NO_HISTORY_ACCESS";
+    unableToAccessError.channel = "1234.1234";
+
+    gateway.getStub("fetchMessage").rejects(unableToAccessError);
+
+    const message = new SlackMessage(gateway, {
       channel: "C12345",
       ts: "1234.1234",
     });
-
-    server.use(
-      rest.get(
-        "https://slack.com/api/conversations.history",
-        (_req, res, ctx) => {
-          return res(ctx.status(422));
-        }
-      )
-    );
-
-    server.use(
-      rest.post("https://slack.com/api/chat.postMessage", (_req, res, ctx) => {
-        return res(ctx.json(mockMessageResponse()));
-      })
-    );
-
-    const postEvents = waitForRequest(
-      server,
-      "POST",
-      "https://slack.com/api/chat.postMessage"
-    );
 
     await message.sendBlock({
       type: "section",
@@ -167,9 +153,14 @@ describe("SlackMessage", () => {
         text: ":grey_exclamation:   api starting build",
       },
     });
+    expect(gateway.getStub("sendNewMessage").calledOnce).to.be.true;
+    expect(gateway.getStub("sendNewMessage").firstCall.args[0]).to.equal(
+      "C12345"
+    );
 
-    const req = await postEvents;
-    expect(req.body.blocks[0].text.text).to.equal(
+    expect(
+      gateway.getStub("sendNewMessage").firstCall.args[1].blocks[0].text.text
+    ).to.equal(
       "The notification bot must be a member of this channel for build updates to work"
     );
   });
