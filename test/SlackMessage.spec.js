@@ -83,21 +83,6 @@ describe("SlackMessage", () => {
       ts: "1234.1234",
     });
 
-    server.use(
-      rest.get(
-        "https://slack.com/api/conversations.history",
-        (_req, res, ctx) => {
-          return res(ctx.json(mockHistoryResponse()));
-        }
-      )
-    );
-
-    server.use(
-      rest.post("https://slack.com/api/chat.update", (_req, res, ctx) => {
-        return res(ctx.json(mockMessageResponse()));
-      })
-    );
-
     const newBlock = {
       type: "section",
       text: {
