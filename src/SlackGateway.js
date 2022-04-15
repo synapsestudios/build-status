@@ -10,6 +10,14 @@ class SlackGatewayRoot {
   async sendNewMessage() {
     return;
   }
+
+  async updateMessage() {
+    return;
+  }
+
+  async fetchMessage() {
+    return;
+  }
 }
 
 class SlackGateway extends SlackGatewayRoot {
