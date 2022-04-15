@@ -1,4 +1,4 @@
-const { SlackGateway, SlackGatewayRoot } = require("./SlackGateway");
+const { SlackGatewayRoot } = require("./SlackGateway");
 
 class SlackMessageRoot {
   constructor() {
