@@ -1,9 +1,5 @@
 const { expect, use } = require("chai");
 const chaiAsPromised = require("chai-as-promised");
-const { rest } = require("msw");
-const { setupServer } = require("msw/node");
-
-const waitForRequest = require("./waitForRequest");
 
 const mockMessageResponse = require("./mockMessageResponse");
 const mockHistoryResponse = require("./mockHistoryResponse");
@@ -11,18 +7,9 @@ const mockHistoryResponse = require("./mockHistoryResponse");
 const { SlackMessage, SlackMessageRoot } = require("../src/SlackMessage");
 const SlackGateway = require("../src/SlackGateway.mock.js");
 
-const server = setupServer();
-
 use(chaiAsPromised);
 
 describe("SlackMessage", () => {
-  before(() => {
-    server.listen();
-  });
-  after(() => {
-    server.close();
-  });
-
   it("is unable to instantiate base class", () => {
     expect(() => new SlackMessageRoot()).to.throw();
   });
@@ -167,7 +154,8 @@ describe("SlackMessage", () => {
 
   describe("appendHeaderLink", () => {
     it("fails to append a header link when no link is supplied", async () => {
-      const message = new SlackMessage("TOKEN", {
+      const gateway = new SlackGateway();
+      const message = new SlackMessage(gateway, {
         channel: "C12345",
         ts: "1234.1234",
       });
@@ -177,7 +165,8 @@ describe("SlackMessage", () => {
     });
 
     it("fails to append header link when link type is wrong", async () => {
-      const message = new SlackMessage("TOKEN", {
+      const gateway = new SlackGateway();
+      const message = new SlackMessage(gateway, {
         channel: "C12345",
         ts: "1234.1234",
       });
@@ -190,7 +179,8 @@ describe("SlackMessage", () => {
     });
 
     it("fails to append header link when object is malformed", () => {
-      const message = new SlackMessage("TOKEN", {
+      const gateway = new SlackGateway();
+      const message = new SlackMessage(gateway, {
         channel: "C12345",
         ts: "1234.1234",
       });
@@ -203,80 +193,59 @@ describe("SlackMessage", () => {
     });
 
     it("Successfully sends a simple url", async () => {
-      const message = new SlackMessage("TOKEN", {
+      const gateway = new SlackGateway();
+      gateway
+        .getStub("fetchMessage")
+        .returns(mockHistoryResponse().messages[0]);
+      gateway.getStub("updateMessage").returns(mockMessageResponse());
+      const message = new SlackMessage(gateway, {
         channel: "C12345",
         ts: "1234.1234",
       });
 
-      server.use(
-        rest.get(
-          "https://slack.com/api/conversations.history",
-          (_req, res, ctx) => {
-            return res(ctx.json(mockHistoryResponse()));
-          }
-        )
-      );
-
-      server.use(
-        rest.post("https://slack.com/api/chat.update", (_req, res, ctx) => {
-          return res(ctx.json(mockMessageResponse()));
-        })
-      );
-
-      const postEvents = waitForRequest(
-        server,
-        "POST",
-        "https://slack.com/api/chat.update"
-      );
-
       await message.appendHeaderLink("https://google.com");
-
-      const response = await postEvents;
-      expect(response.body.ts).to.equal("1234.1234");
-      expect(response.body.channel).to.equal("C12345");
-      expect(response.body.blocks[1].elements[1].text).to.have.string(
-        "<https://google.com|https://google.com>"
+      expect(gateway.getStub("updateMessage").calledOnce).to.be.true;
+      expect(gateway.getStub("updateMessage").firstCall.args[0]).to.equal(
+        "C12345"
       );
+      expect(gateway.getStub("updateMessage").firstCall.args[1]).to.equal(
+        "1234.1234"
+      );
+
+      expect(
+        gateway.getStub("updateMessage").firstCall.args[2].blocks[1].elements[1]
+          .text
+      ).to.have.string("<https://google.com|https://google.com>");
     });
 
     it("Successfully sends a link object", async () => {
-      const message = new SlackMessage("TOKEN", {
+      const gateway = new SlackGateway();
+      gateway
+        .getStub("fetchMessage")
+        .returns(mockHistoryResponse().messages[0]);
+      gateway.getStub("updateMessage").returns(mockMessageResponse());
+
+      const message = new SlackMessage(gateway, {
         channel: "C12345",
         ts: "1234.1234",
       });
-
-      server.use(
-        rest.get(
-          "https://slack.com/api/conversations.history",
-          (_req, res, ctx) => {
-            return res(ctx.json(mockHistoryResponse()));
-          }
-        )
-      );
-
-      server.use(
-        rest.post("https://slack.com/api/chat.update", (_req, res, ctx) => {
-          return res(ctx.json(mockMessageResponse()));
-        })
-      );
-
-      const postEvents = waitForRequest(
-        server,
-        "POST",
-        "https://slack.com/api/chat.update"
-      );
 
       await message.appendHeaderLink({
         url: "https://google.com",
         text: "WOW COOL",
       });
 
-      const response = await postEvents;
-      expect(response.body.ts).to.equal("1234.1234");
-      expect(response.body.channel).to.equal("C12345");
-      expect(response.body.blocks[1].elements[1].text).to.have.string(
-        "<https://google.com|WOW COOL>"
+      expect(gateway.getStub("updateMessage").calledOnce).to.be.true;
+      expect(gateway.getStub("updateMessage").firstCall.args[0]).to.equal(
+        "C12345"
       );
+      expect(gateway.getStub("updateMessage").firstCall.args[1]).to.equal(
+        "1234.1234"
+      );
+      expect(
+        gateway.getStub("updateMessage").firstCall.args[2].blocks[1].elements[1]
+          .text
+      ).to.have.string("<https://google.com|WOW COOL>");
     });
   });
 });
