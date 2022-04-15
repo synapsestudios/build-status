@@ -14,12 +14,24 @@ describe("SlackMessage", () => {
     expect(() => new SlackMessageRoot()).to.throw();
   });
 
-  it("Throws when token is missing", async () => {
+  it("Throws when gateway is missing", async () => {
     expect(() => new SlackMessage()).to.throw();
   });
 
+  it("throws when gateway is wrong type", () => {
+    return expect(() => new SlackMessage("TOKEN")).to.throw(
+      "SlackGateway instance is required"
+    );
+  });
+
+  it("allows me to inject a SlackGateway instance", () => {
+    const gateway = new SlackGateway();
+    new SlackMessage(gateway);
+  });
+
   it("Throws when initializing with no channel", async () => {
-    const message = new SlackMessage("TOKEN");
+    const gateway = new SlackGateway();
+    const message = new SlackMessage(gateway);
     return expect(message.initialize()).to.be.rejected;
   });
 
@@ -39,11 +51,6 @@ describe("SlackMessage", () => {
     });
 
     expect(message.ts).to.eq(mockMessage.ts);
-  });
-
-  it("allows me to inject a SlackGateway instance", () => {
-    const gateway = new SlackGateway();
-    new SlackMessage(gateway);
   });
 
   it("initialize responds predictably when there are errors in the slack response", async () => {

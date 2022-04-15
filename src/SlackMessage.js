@@ -31,12 +31,10 @@ class SlackMessage extends SlackMessageRoot {
 
   constructor(slackToken, message = { channel: "", ts: "" }) {
     super();
+    if (!(slackToken instanceof SlackGatewayRoot))
+      throw new Error("SlackGateway instance is required");
 
-    if (slackToken instanceof SlackGatewayRoot) {
-      this.#_slackGateway = slackToken;
-    } else {
-      this.#_slackGateway = new SlackGateway(slackToken);
-    }
+    this.#_slackGateway = slackToken;
     this.#_channel = message.channel;
     this.#_ts = message.ts;
   }
