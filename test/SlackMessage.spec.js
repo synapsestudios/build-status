@@ -7,12 +7,6 @@ const waitForRequest = require("./waitForRequest");
 
 const mockMessageResponse = require("./mockMessageResponse");
 const mockHistoryResponse = require("./mockHistoryResponse");
-const mockMessageFailure = () => ({
-  ok: false,
-  error: "channel_not_found",
-  warning: "missing_charset",
-  response_metadata: { warnings: ["missing_charset"] },
-});
 
 const { SlackMessage, SlackMessageRoot } = require("../src/SlackMessage");
 const SlackGateway = require("../src/SlackGateway.mock.js");
@@ -66,21 +60,25 @@ describe("SlackMessage", () => {
   });
 
   it("initialize responds predictably when there are errors in the slack response", async () => {
-    const mockFailure = mockMessageFailure();
-    server.use(
-      rest.post("https://slack.com/api/chat.postMessage", (_req, res, ctx) => {
-        return res(ctx.json(mockFailure));
-      })
-    );
+    const gateway = new SlackGateway();
+    gateway.getStub("sendNewMessage").rejects(new Error("channel_not_found"));
 
-    const message = new SlackMessage(new SlackGateway(), {
+    const message = new SlackMessage(gateway, {
       channel: "general",
     });
-    expect(message.initialize({})).to.be.rejected;
+
+    return expect(message.initialize({})).to.be.rejectedWith(
+      "channel_not_found"
+    );
   });
 
   it("successfully appends a block", async () => {
-    const message = new SlackMessage("TOKEN", {
+    const gateway = new SlackGateway();
+
+    gateway.getStub("fetchMessage").returns(mockHistoryResponse().messages[0]);
+    gateway.getStub("updateMessage").returns(mockMessageResponse());
+
+    const message = new SlackMessage(gateway, {
       channel: "C12345",
       ts: "1234.1234",
     });
@@ -100,21 +98,22 @@ describe("SlackMessage", () => {
       })
     );
 
-    const postEvents = waitForRequest(
-      server,
-      "POST",
-      "https://slack.com/api/chat.update"
-    );
-
-    await message.sendBlock({
+    const newBlock = {
       type: "section",
       text: {
         type: "mrkdwn",
         text: ":grey_exclamation:   api starting build",
       },
-    });
+    };
+    await message.sendBlock(newBlock);
 
-    await postEvents;
+    const updateStub = gateway.getStub("updateMessage");
+    expect(updateStub.calledOnce).to.be.true;
+    expect(updateStub.firstCall.args[0]).to.equal("C12345");
+    expect(updateStub.firstCall.args[1]).to.equal("1234.1234");
+    expect([...updateStub.firstCall.args[2].blocks].pop().text.text).to.equal(
+      newBlock.text.text
+    );
   });
 
   it("successfully overwrites a block", async () => {

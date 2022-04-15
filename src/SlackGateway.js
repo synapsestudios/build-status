@@ -93,7 +93,7 @@ class SlackGateway extends SlackGatewayRoot {
           responseType: "json",
         }
       );
-      return response;
+      return response.body.messages[0];
     } catch (e) {
       const unableToAccessError = new Error(
         `Unable to fetch history in channel`
