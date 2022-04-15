@@ -4,3 +4,4 @@
 
 echo "Running Build"
 npm run build
+git add dist/index/index.js dist/cleanup/index.js
