@@ -102,35 +102,17 @@ describe("SlackMessage", () => {
   });
 
   it("successfully overwrites a block", async () => {
-    const message = new SlackMessage("TOKEN", {
+    const gateway = new SlackGateway();
+    gateway.getStub("fetchMessage").returns(mockHistoryResponse().messages[0]);
+    gateway.getStub("updateMessage").returns(mockMessageResponse());
+
+    const message = new SlackMessage(gateway, {
       channel: "C12345",
       ts: "1234.1234",
     });
 
     const historyResponse = mockHistoryResponse();
-
-    server.use(
-      rest.get(
-        "https://slack.com/api/conversations.history",
-        (_req, res, ctx) => {
-          return res(ctx.json(historyResponse));
-        }
-      )
-    );
-
     const blockToOverwrite = historyResponse.messages[0].blocks[0];
-    server.use(
-      rest.post("https://slack.com/api/chat.update", (_req, res, ctx) => {
-        const blocksMatchingId = _req.body.blocks.reduce(
-          (blocks, b) =>
-            b.block_id === blockToOverwrite.block_id ? [...blocks, b] : blocks,
-          []
-        );
-        expect(blocksMatchingId.length).to.eq(1);
-        expect(blocksMatchingId[0].type).to.eq("section");
-        return res(ctx.json(mockMessageResponse()));
-      })
-    );
 
     await message.sendBlock({
       type: "section",
@@ -140,6 +122,15 @@ describe("SlackMessage", () => {
         text: ":grey_exclamation:   api starting build",
       },
     });
+
+    const updateStub = gateway.getStub("updateMessage");
+    expect(updateStub.calledOnce).to.be.true;
+    expect(updateStub.firstCall.args[2].blocks[0].block_id).to.equal(
+      blockToOverwrite.block_id
+    );
+    expect(updateStub.firstCall.args[2].blocks[0].text.text).to.equal(
+      ":grey_exclamation:   api starting build"
+    );
   });
 
   it("Sends a message to slack channel when bot does not have access to channel history", async () => {
